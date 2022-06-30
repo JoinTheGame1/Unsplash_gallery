@@ -11,6 +11,7 @@ import UIKit
 class RandomPhotosViewController: UIViewController {
     
     private var collectionView: UICollectionView?
+    private var networkService = NetworkService()
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -23,6 +24,9 @@ class RandomPhotosViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupCollectionView()
+        networkService.getRandomPhotos(count: 10) { _ in
+            print(1)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

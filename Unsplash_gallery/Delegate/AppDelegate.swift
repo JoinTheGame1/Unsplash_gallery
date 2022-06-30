@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Unsplash_gallery
 //
-//  Created by Никитка on 30.06.2022.
+//  Created by Никита Рыльский on 30.06.2022.
 //
 
 import UIKit

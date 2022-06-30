@@ -107,7 +107,8 @@ extension RandomPhotosViewController: UICollectionViewDelegate, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RandomPhotoCell.identifier, for: indexPath) as? RandomPhotoCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RandomPhotoCell.identifier,
+                                                            for: indexPath) as? RandomPhotoCell
         else { return UICollectionViewCell() }
         
         return cell

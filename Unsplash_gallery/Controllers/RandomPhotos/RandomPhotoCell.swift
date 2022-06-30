@@ -18,7 +18,7 @@ class RandomPhotoCell: UICollectionViewCell {
         image.contentMode = .scaleToFill
         image.image = UIImage(named: "hollow knight3")
         image.layer.borderWidth = 1
-        image.layer.borderColor = UIColor.secondarySystemBackground.cgColor
+        image.layer.borderColor = UIColor.label.cgColor
         image.layer.cornerRadius = 8
         image.layer.masksToBounds = true
         return image

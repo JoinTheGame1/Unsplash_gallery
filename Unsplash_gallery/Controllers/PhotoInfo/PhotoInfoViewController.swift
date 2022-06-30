@@ -20,6 +20,17 @@ class PhotoInfoViewController: UIViewController {
         return label
     }()
     
+    private let shadowView: UIView = {
+        let shadow = UIView()
+        shadow.translatesAutoresizingMaskIntoConstraints = false
+        shadow.layer.cornerRadius = 8
+        shadow.layer.shadowRadius = 6
+        shadow.layer.shadowOpacity = 0.8
+        shadow.layer.shadowOffset = .zero
+        shadow.layer.shadowColor = UIColor.label.cgColor
+        return shadow
+    }()
+    
     let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
@@ -82,7 +93,8 @@ class PhotoInfoViewController: UIViewController {
     
     private func setupViews() {
         view.addSubview(authorNameLabel)
-        view.addSubview(imageView)
+        view.addSubview(shadowView)
+        shadowView.addSubview(imageView)
         view.addSubview(dateLabel)
         view.addSubview(locationLabel)
         view.addSubview(downloadsLabel)
@@ -93,10 +105,15 @@ class PhotoInfoViewController: UIViewController {
             authorNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             authorNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
             
-            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 8),
-            imageView.widthAnchor.constraint(equalToConstant: 300),
-            imageView.heightAnchor.constraint(equalToConstant: 300),
+            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            shadowView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 8),
+            shadowView.widthAnchor.constraint(equalToConstant: 300),
+            shadowView.heightAnchor.constraint(equalToConstant: 300),
+            
+            imageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
+            imageView.topAnchor.constraint(equalTo: shadowView.topAnchor),
+            imageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
             
             dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
             dateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),

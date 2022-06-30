@@ -9,8 +9,55 @@ import Foundation
 import UIKit
 
 class FavouritesViewController: UIViewController {
+    
+    private let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.isUserInteractionEnabled = true
+        tableView.showsVerticalScrollIndicator = false
+        tableView.backgroundColor = .clear
+        return tableView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .orange
+        view.backgroundColor = .systemBackground
+        setupTableView()
+    }
+}
+
+extension FavouritesViewController {
+    private func setupTableView() {
+        tableView.frame = view.bounds
+        tableView.register(FavouritePhotoCell.self, forCellReuseIdentifier: FavouritePhotoCell.identifier)
+        view.addSubview(tableView)
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+}
+
+extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        tableView.separatorStyle = .none
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: FavouritePhotoCell.identifier,
+                                                       for: indexPath) as? FavouritePhotoCell
+        else { return UITableViewCell() }
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        120
     }
 }

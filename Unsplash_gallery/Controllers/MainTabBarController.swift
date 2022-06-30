@@ -16,6 +16,7 @@ class MainTabBarController: UITabBarController {
     }
     
     private func setup() {
+        tabBar.isTranslucent = true
         let randomPhotosVC = RandomPhotosViewController()
         let favouritesVC = FavouritesViewController()
         let photosImage = UIImage(systemName: "photo.fill.on.rectangle.fill") ?? UIImage()

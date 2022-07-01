@@ -7,10 +7,13 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 class FavouritePhotoCell: UITableViewCell {
     
     static let identifier = "FavouritePhotoCell"
+    
+    var photoModel: PhotoCellModel?
     
     let shadowView: UIView = {
         let shadow = UIView()
@@ -26,7 +29,7 @@ class FavouritePhotoCell: UITableViewCell {
     let image: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFill
         image.image = UIImage(named: "hollow knight3")
         image.layer.borderWidth = 1
         image.layer.borderColor = UIColor.label.cgColor
@@ -50,6 +53,12 @@ class FavouritePhotoCell: UITableViewCell {
         setupCell()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        image.image = nil
+        authorNameLabel.text = ""
+    }
+    
     private func setupCell() {
         contentView.addSubview(shadowView)
         shadowView.addSubview(image)
@@ -57,10 +66,10 @@ class FavouritePhotoCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             shadowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            shadowView.widthAnchor.constraint(equalToConstant: 120),
+            shadowView.widthAnchor.constraint(equalToConstant: 120 * (1 / (photoModel?.aspectRatio ?? 1))),
             shadowView.heightAnchor.constraint(equalToConstant: 120),
-            shadowView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            shadowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            shadowView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            shadowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
             
             image.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
             image.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
@@ -71,5 +80,11 @@ class FavouritePhotoCell: UITableViewCell {
             authorNameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             authorNameLabel.centerYAnchor.constraint(equalTo: shadowView.centerYAnchor)
         ])
+    }
+    
+    func configure(with model: PhotoCellModel) {
+        self.photoModel = model
+        image.kf.setImage(with: model.smallImage)
+        authorNameLabel.text = model.authorName
     }
 }

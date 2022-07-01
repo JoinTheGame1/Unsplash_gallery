@@ -12,6 +12,17 @@ class RandomPhotosViewController: UIViewController {
     
     private var collectionView: UICollectionView?
     private var networkService = NetworkService()
+    private var isLoading = false
+    private var query: String = ""
+    private let caretaker = PhotosCaretaker()
+    private let factory = PhotosFactory()
+    private var models: [PhotoCellModel] = [] {
+        didSet {
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
+        }
+    }
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -24,14 +35,13 @@ class RandomPhotosViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupCollectionView()
-        networkService.getRandomPhotos(count: 10) { _ in
-            print(1)
-        }
+        getRandomPhotos(completion: {})
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addNotifications()
+        collectionView?.reloadData()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -40,7 +50,7 @@ class RandomPhotosViewController: UIViewController {
     }
 }
 
-extension RandomPhotosViewController: UISearchBarDelegate {
+extension RandomPhotosViewController {
     private func setupCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
         guard let collectionView = collectionView else { return }
@@ -56,6 +66,7 @@ extension RandomPhotosViewController: UISearchBarDelegate {
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.prefetchDataSource = self
         searchBar.delegate = self
         
         NSLayoutConstraint.activate([
@@ -103,40 +114,93 @@ extension RandomPhotosViewController: UISearchBarDelegate {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification,
                                                   object: nil)
     }
+    
+    private func getRandomPhotos(completion: @escaping () -> Void) {
+        DispatchQueue.global(qos: .utility).async {
+            self.networkService.getRandomPhotos { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .failure:
+                    print("GET RANDOM PHOTOS ERROR")
+                case .success(let models):
+                    self.factory.buildCellsModels(from: models) { models in
+                        self.models.append(contentsOf: models)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func getSearchPhotos() {
+        DispatchQueue.global().async {
+            self.networkService.getSearchPhotos(query: self.query) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .failure:
+                    print("GET SEARCH PHOTOS ERROR")
+                case .success(let models):
+                    self.factory.buildCellsModels(from: models) { models in
+                        self.models = models
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 extension RandomPhotosViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        100
+        models.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RandomPhotoCell.identifier,
                                                             for: indexPath) as? RandomPhotoCell
         else { return UICollectionViewCell() }
-        
+        let url = models[indexPath.item].smallImage
+        cell.configure(with: url)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let infoVC = PhotoInfoViewController()
-        let navigationVC = UINavigationController(rootViewController: infoVC)
-        navigationVC.modalPresentationStyle = .fullScreen
-        self.present(navigationVC, animated: true, completion: nil)
+        let infoVC = PhotoInfoViewController(photoModel: models[indexPath.item])
+        let nc = UINavigationController(rootViewController: infoVC)
+        nc.modalPresentationStyle = .fullScreen
+        self.present(nc, animated: true)
     }
 }
 
 extension RandomPhotosViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemWidth = CGFloat(collectionView.frame.size.width / 2)
-        return CGSize.init(width: itemWidth, height: itemWidth)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.frame.width
+        let photo = models[indexPath.item]
+        let itemHeight = width * photo.aspectRatio
+        return CGSize(width: width, height: itemHeight)
+    }
+}
+
+extension RandomPhotosViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        query = searchText
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        0
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        getSearchPhotos()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        0
+}
+
+extension RandomPhotosViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        print(indexPaths.last?.item ?? "")
+        guard let maxIndex = indexPaths.last?.item else { return }
+        if maxIndex > models.count - 7,
+           !isLoading {
+            isLoading = true
+            getRandomPhotos {
+                self.isLoading = false
+            }
+        }
     }
 }

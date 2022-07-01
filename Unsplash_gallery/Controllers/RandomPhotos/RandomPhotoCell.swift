@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 class RandomPhotoCell: UICollectionViewCell {
     
@@ -15,7 +16,7 @@ class RandomPhotoCell: UICollectionViewCell {
     private let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleToFill
+        image.contentMode = .scaleAspectFit
         image.image = UIImage(named: "hollow knight3")
         image.layer.borderWidth = 1
         image.layer.borderColor = UIColor.label.cgColor
@@ -46,5 +47,9 @@ class RandomPhotoCell: UICollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
         ])
+    }
+    
+    func configure(with url: URL?) {
+        imageView.kf.setImage(with: url)
     }
 }

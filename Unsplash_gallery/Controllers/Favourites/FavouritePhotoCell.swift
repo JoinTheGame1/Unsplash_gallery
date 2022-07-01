@@ -66,7 +66,7 @@ class FavouritePhotoCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             shadowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            shadowView.widthAnchor.constraint(equalToConstant: 120 * (1 / (photoModel?.aspectRatio ?? 1))),
+            shadowView.widthAnchor.constraint(equalToConstant: 120),
             shadowView.heightAnchor.constraint(equalToConstant: 120),
             shadowView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             shadowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),

@@ -23,8 +23,9 @@ class MainTabBarController: UITabBarController {
         let heartImage = UIImage(systemName: "heart") ?? UIImage()
         
         viewControllers = [
-            generateNavigationController(rootViewController: randomPhotosVC, title: "Photos", image: photosImage),
-            generateNavigationController(rootViewController: favouritesVC, title: "Favourites", image: heartImage),
+            generateNavigationController(rootViewController: randomPhotosVC, title: "Случайные фотографии",
+                                         image: photosImage),
+            generateNavigationController(rootViewController: favouritesVC, title: "Избранное", image: heartImage),
         ]
     }
     

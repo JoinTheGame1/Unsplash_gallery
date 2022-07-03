@@ -12,7 +12,7 @@ struct PhotosResponseModel: Codable {
     let results: [PhotoModel]?
 }
 
-class PhotoModel: Codable {
+struct PhotoModel: Codable {
     let id: String?
     let createdDate: String?
     let width: Int

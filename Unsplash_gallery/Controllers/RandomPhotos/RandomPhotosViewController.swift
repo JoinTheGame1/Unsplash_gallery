@@ -34,18 +34,12 @@ class RandomPhotosViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        addNotifications()
         setupCollectionView()
         getRandomPhotos(completion: {})
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        addNotifications()
-        collectionView?.reloadData()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    deinit {
         removeNotifications()
     }
 }
@@ -116,37 +110,33 @@ extension RandomPhotosViewController {
     }
     
     private func getRandomPhotos(completion: @escaping () -> Void) {
-        DispatchQueue.global(qos: .utility).async {
-            self.networkService.getRandomPhotos { [weak self] result in
-                guard let self = self else { return }
-                switch result {
+        networkService.getRandomPhotos { [weak self] result in
+            guard let self = self else { return }
+            switch result {
                 case .failure:
                     print("GET RANDOM PHOTOS ERROR")
                 case .success(let models):
                     self.factory.buildCellsModels(from: models) { models in
                         self.models.append(contentsOf: models)
                     }
-                }
             }
         }
     }
     
     private func getSearchPhotos() {
-        DispatchQueue.global().async {
-            self.networkService.getSearchPhotos(query: self.query) { [weak self] result in
-                guard let self = self else { return }
-                switch result {
+        networkService.getSearchPhotos(query: self.query) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
                 case .failure:
                     print("GET SEARCH PHOTOS ERROR")
                 case .success(let models):
                     self.factory.buildCellsModels(from: models) { models in
                         self.models = models
                     }
-                }
             }
         }
     }
-
+    
 }
 
 extension RandomPhotosViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -193,7 +183,6 @@ extension RandomPhotosViewController: UISearchBarDelegate {
 
 extension RandomPhotosViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        print(indexPaths.last?.item ?? "")
         guard let maxIndex = indexPaths.last?.item else { return }
         if maxIndex > models.count - 7,
            !isLoading {

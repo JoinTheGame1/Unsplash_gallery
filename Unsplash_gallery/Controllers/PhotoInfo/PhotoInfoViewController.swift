@@ -13,6 +13,14 @@ class PhotoInfoViewController: UIViewController {
     var photoModel: PhotoCellModel
     var isfavourite = false
     
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.backgroundColor = .systemBackground
+        return scrollView
+    }()
+    
     private let authorNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -155,22 +163,28 @@ class PhotoInfoViewController: UIViewController {
     }
     
     private func setupViews() {
-        view.addSubview(authorNameLabel)
-        view.addSubview(shadowView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(authorNameLabel)
+        scrollView.addSubview(shadowView)
         shadowView.addSubview(imageView)
-        view.addSubview(dateLabel)
-        view.addSubview(locationLabel)
-        view.addSubview(downloadsLabel)
-        view.addSubview(likeButton)
-        view.addSubview(infoLabel)
+        scrollView.addSubview(dateLabel)
+        scrollView.addSubview(locationLabel)
+        scrollView.addSubview(downloadsLabel)
+        scrollView.addSubview(likeButton)
+        scrollView.addSubview(infoLabel)
         
         NSLayoutConstraint.activate([
-            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
-            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
-            authorNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            authorNameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
             
-            shadowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            authorNameLabel.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 4),
+            authorNameLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -4),
+            authorNameLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            authorNameLabel.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            
+            shadowView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             shadowView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 16),
             shadowView.widthAnchor.constraint(equalToConstant: 300),
             shadowView.heightAnchor.constraint(equalToConstant: 300 * photoModel.aspectRatio),
@@ -180,28 +194,29 @@ class PhotoInfoViewController: UIViewController {
             imageView.topAnchor.constraint(equalTo: shadowView.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
             
-            dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
-            dateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
-            dateLabel.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
+            dateLabel.leadingAnchor.constraint(equalTo: authorNameLabel.leadingAnchor, constant: 4),
+            dateLabel.trailingAnchor.constraint(equalTo: authorNameLabel.trailingAnchor, constant: -4),
+            dateLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             dateLabel.topAnchor.constraint(equalTo: shadowView.bottomAnchor, constant: 16),
             
-            locationLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
-            locationLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
-            locationLabel.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
+            locationLabel.leadingAnchor.constraint(equalTo: dateLabel.leadingAnchor, constant: 4),
+            locationLabel.trailingAnchor.constraint(equalTo: dateLabel.trailingAnchor, constant: -4),
+            locationLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             locationLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 8),
             
-            downloadsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
-            downloadsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
-            downloadsLabel.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
+            downloadsLabel.leadingAnchor.constraint(equalTo: locationLabel.leadingAnchor, constant: 4),
+            downloadsLabel.trailingAnchor.constraint(equalTo: locationLabel.trailingAnchor, constant: -4),
+            downloadsLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             downloadsLabel.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 8),
             
             likeButton.widthAnchor.constraint(equalToConstant: 100),
-            likeButton.centerXAnchor.constraint(equalTo: shadowView.centerXAnchor),
+            likeButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             likeButton.topAnchor.constraint(equalTo: downloadsLabel.bottomAnchor, constant: 8),
             
-            infoLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
-            infoLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
-            infoLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
+            infoLabel.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 4),
+            infoLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -4),
+            infoLabel.topAnchor.constraint(equalTo: likeButton.bottomAnchor, constant: 8),
+            infoLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -20)
         ])
     }
     
